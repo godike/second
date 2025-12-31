@@ -25,6 +25,7 @@ sudo usermod -aG docker ec2-user
 sudo systemctl restart docker
 sudo chmod 666 /var/run/docker.sock
 ----------------------------------------------------------------------
-yum install git java-1.8.0-openjdk maven -y
+sudo apt install git java-1.8.0-openjdk maven -y
+sudo apt install openjdk-1.8.0-jdk maven git -y
 
 
