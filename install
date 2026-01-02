@@ -37,6 +37,8 @@ wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.
 ----------------------------------------------------------------------------------------------------------
 chmod 777 ///var/rn/docker.sock
 docker permission
+sudo apt update && sudo apt install -y openjdk-8-jdk maven git
+
 ---------------------------------------------------------------------------------------------------
 
 
