@@ -1,5 +1,7 @@
-FROM openjdk:8
-EXPOSE 8080
-ADD target/devops-integration.jar devops-integration.jar
-ENTRYPOINT ["java","-jar","/devops-integration.jar"]
+
+FROM httpd:2.4
+MAINTAINER NAME NACHIK
+LABEL FIRST CONTAINER
+EXPOSE 80
+COPY . /usr/local/apache2/htdocs/
 
