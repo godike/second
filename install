@@ -26,6 +26,9 @@ sudo systemctl restart docker
 sudo chmod 666 /var/run/docker.sock
 ----------------------------------------------------------------------
 sudo apt install git java-1.8.0-openjdk maven -y
-sudo apt install openjdk-1.8.0-jdk maven git -y
+
+wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.tar.gz
+chmod 777 ///var/rn/docker.sock
+
 
 
