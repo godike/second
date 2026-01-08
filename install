@@ -21,7 +21,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -aG docker ubuntu
 sudo usermod -aG docker jenkins
-sudo docker run -d --name sonar -p 9000:9000 sonarqube:lts
+sudo docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 
 -------------------------------------------------------------
 git
