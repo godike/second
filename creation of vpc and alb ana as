@@ -1,0 +1,158 @@
+creation of vpc in terraform
+-----------------------------------------
+resource "aws_vpc" "one" {
+
+tags = {
+
+Name "my-vpc"
+
+}
+
+cidr_block = "10.0.0.0/16"
+
+instance_tenancy = "default" 
+enable_dns_hostnames = "true" 
+}
+
+resource "aws subnet" "two" { 
+vpc_id=aws_vpc.one.id 
+tags = { 
+Name "subnet-1" 
+}
+availability_zone = "us-east-1a"
+cidr_block = "10.0.1.0/24" 
+map_public_ip_on_launch = "true" 
+}
+resource "aws_subnet" "three" { 
+vpc_id=aws_vpc.one.id 
+tags = {
+Name "subnet-2" 
+}
+availability_zone = "us-east-1b"
+cidr_block = "10.0.2.0/24
+map_public_ip_on_launch = "true"
+}
+}
+
+resource "aws_internet_gateway" "four" { 
+vpc_id=aws_vpc.one.id
+}
+resource "aws_route_table" "five" {
+tags = {
+Name "my-rt"
+}
+vpc_id=aws_vpc.one.id
+route {
+gateway_id=aws_internet_gateway.four.id
+cidr_block = "0.0.0.0/0"
+}
+}
+resource "aws_route_table_association" "six" {
+
+subnet_id=aws_subnet.two.id
+
+route_table_id = aws_route_table.five.id
+
+}
+
+resource "aws_route_table_association" "seven {
+
+subnet_id = aws_subnet.two.id
+
+route_table_id = aws_route_table.five.id
+
+}
+
+----------------------------------------------------------------------------------------------
+  security
+resource "aws_security_group" "mysg"
+Name = "terraform-sg"
+description = "it has all traffic"
+vpc_id=aws_vpc.one.id
+ingress { 
+from_port = "0" 
+to port = "0" 
+protocol="-1" 
+cidr_blocks = ["0.0.0.0/8"] }
+
+egress {
+from_port = "0" 
+to_port = "0" 
+protocol="-1" 
+cidr_blocks = ["0.0.0.0/8"] }
+}
+----------------------------------------------------------------------------------------------
+alb ang as
+resource "aws_launch_configuration" "mylc" {
+
+name "terraform-lt"
+
+image_id= "ami-0a5c3558529277641"
+
+instance_type = "t2.micro"
+
+key_name = "mustafakey-pair"
+
+security_groups = [aws_security_group.mysg.id]
+
+}
+
+user_data = <<-EOF
+
+#!/bin/bash
+
+sudo yum update -y
+
+sudo yum install httpd -y
+
+sudo systemctl start httpd
+
+sudo systemctl enable httpd
+
+sudo systemctl restart httpd
+
+sudo chmod 766 /var/www/html/index.html
+
+sudo echo "<html><body><h1>Welcome to Terraform Scaling.</h1></body></html>" >/var/www/html/index.html
+
+EOF
+
+resource "aws_elb" "myelb" {
+
+name = "terraform-lb"
+
+subnets = [aws_subnet.two.id, aws_subnet.three.id]
+
+security_groups = [aws_security_group.mysg.id]
+
+listener {
+
+instance_port = 80
+
+instance_protocol = "http"
+
+lb_port 80
+
+lb protocol = "http"
+
+}
+
+}
+
+resource "aws_autoscaling_group" "myasg"
+
+name "terraform-asg"
+
+launch_configuration = aws_launch_configuration.mylc.id
+
+min_size=2
+
+max_size = 6
+
+desired_capacity = 2
+
+health_check = "EC2"
+
+load_balancers = [aws_elb.myelb.id]
+
+vpc_zone_identifier = [aws_subnet.two.id, aws_subnet.three.id]
